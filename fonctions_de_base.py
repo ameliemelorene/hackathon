@@ -37,5 +37,3 @@ def cree_Passage(salle):
 
 
 def cree_Monstre()
-
-# je teste des choses
