@@ -27,6 +27,32 @@ def cree_Carte(n=36,p=65):
   nbreSalle=rd.randint(4,6)
   ListeSalle=[]
   for i in range(nbreSalle):
+<<<<<<< HEAD
+    largeur=rd.randint(4,7)
+    longueur=rd.randint(4,11)
+    cree_salle(longueur,largeur,C)
+
+  return M
+
+def cases_occupes(M):
+  n,p=M.shape
+  C=np.zeros((n,p))
+  return C
+
+def cree_salle(n,p,C):
+  """crée une salle dans un endroit non occupé de la carte"""
+
+
+def dans_une_salle((i,j,k))
+
+
+
+def cree_Passage(salle):
+  """ crée un passage sur les bords d'une salle"""
+
+
+def cree_Monstre()
+=======
     largeur=rd.randint(5,7)
     longueur=rd.randint(6,10)
     si,sj=cree_salle(longueur,largeur,C,M)
@@ -101,3 +127,4 @@ plt.show()
 #
 #
 # def cree_Monstre()M=
+>>>>>>> 5efed739377bce44fdf1cb53d0549309f199133f
