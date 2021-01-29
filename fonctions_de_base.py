@@ -15,7 +15,7 @@ def cree_Carte(n=100,p=50):
   for i in range(nbreSalle):
     largeur=rd.randint(4,7)
     longueur=rd.randint(4,11)
-    cree_salle(longueur,largeur)
+    cree_salle(longueur,largeur,C)
 
   return M
 
@@ -24,7 +24,7 @@ def cases_occupes(M):
   C=np.zeros((n,p))
   return C
 
-def cree_salle((n,p)):
+def cree_salle(n,p,C):
   """crée une salle dans un endroit non occupé de la carte"""
 
 
