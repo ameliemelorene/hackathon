@@ -3,6 +3,8 @@ import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
 
+#######################################################
+
 def cree_Carte(n=36,p=65):
   #les salles seront un nombre aléatoire entre 4 et 6
   #la taille des salles varie entre 5x6 et 7x10
@@ -28,8 +30,8 @@ def cree_Carte(n=36,p=65):
     longueur=rd.randint(8,15)
     si,sj=cree_salle(longueur,largeur,C,M)
     ListeSalle.append((si,sj,longueur,largeur))
-  escalier(M,C,ListeSalle)
-  return M,C,ListeSalle
+  esc = escalier(M,C,ListeSalle)
+  return M,C,ListeSalle,esc
 
 
 
@@ -96,11 +98,12 @@ def cree_Chemin(listeSalle,M,C):
 
 
 def escalier(M,C,L):
-  y,x,larg,longueur = L[-1]
-  i = rd.randint(0,longueur)
-  j = rd.randint(0,larg)
+  y,x,larg,longueur = L[0]
+  i = rd.randint(1,5)
+  j = rd.randint(1,5)
   C[y+j,x+i] = 4
   M[y+j,x+i] = 'escalier'
+  return (y+j,x+i)
 
 
 
@@ -123,7 +126,7 @@ def tri_bulle(tab):
       if not inferieur(tab[j],tab[j+1]):
         tab[j], tab[j+1] = tab[j+1], tab[j]
 
-
+######################################################
 
 # in pixels
 W, H = 65, 36
@@ -143,36 +146,50 @@ DIRECTIONS = {
     'UP': (0, -1*Y),
     'RIGHT': (1*X, 0),
     'LEFT': (-1*X, 0),
+    'ENTER' : (100,100)
 }
 
 pg.init()
 screen = pg.display.set_mode((X*W, Y*H))
 
+etage = 0
+nb_etages = 2
+liste_etages= []
+
 #création de la MAP du premier étage
-C1,M1,L1 = cree_Carte()
+C1,M1,L1,esc1 = cree_Carte()
 C1 = C1.T
 M1 = M1.T
+liste_etages.append((M1,C1,L1,esc1))
 
 #création de la MAP du deuxième étage
-C2,M2,L2 = cree_Carte()
+C2,M2,L2,esc2 = cree_Carte()
 C2 = C2.T
 M2 = M2.T
+liste_etages.append((M2,C2,L2,esc2))
 
-C = C1
-M = M1
+M,C,L,esc = liste_etages[0]
 
 #spawn dans une salle
-y,x,l,Larg = L1[0]
+y,x,l,Larg = L[0]
 position = ((x+2)*X,(y+2)*Y)
 
 
 def move_character(position, direction):
-    x,y = position
-    dx,dy = direction
+  global M,C,L,esc,etage
+  x,y = position
+  dx,dy = direction
+  if dx < 100:
     x2,y2 = (x+dx)//X,(y+dy)//Y
     if M[x2,y2] != 1:
       position = (x+dx,y+dy)
-    return position
+  elif dx == 100 and M[x//X,y//Y] == 4:
+    etage = (etage+1)%nb_etages
+    M,C,L,esc = liste_etages[etage]
+    x,y = esc
+    position = y*X,x*Y
+
+  return position
 
 def draw_game(position):
     screen.fill(BACKGROUND_COLOR)
@@ -230,6 +247,8 @@ while running:
                 direction = DIRECTIONS['UP']
             if event.key == pg.K_DOWN:
                 direction = DIRECTIONS['DOWN']
+            if event.key == pg.K_SPACE:
+                direction = DIRECTIONS['ENTER']
 
     position = move_character(position,direction)
     direction = (0,0) 
