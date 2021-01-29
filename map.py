@@ -28,6 +28,7 @@ def cree_Carte(n=36,p=65):
     longueur=rd.randint(8,15)
     si,sj=cree_salle(longueur,largeur,C,M)
     ListeSalle.append((si,sj,longueur,largeur))
+  escalier(M,C,ListeSalle)
   return M,C,ListeSalle
 
 
@@ -94,8 +95,12 @@ def cree_Chemin(listeSalle,M,C):
       dy=S1[0]-S2[0]
 
 
-
-
+def escalier(M,C,L):
+  y,x,larg,longueur = L[-1]
+  i = rd.randint(0,longueur)
+  j = rd.randint(0,larg)
+  C[y+j,x+i] = 4
+  M[y+j,x+i] = 'escalier'
 
 
 
@@ -129,7 +134,9 @@ BACKGROUND_COLOR = (0,0,0)
 ROOM_COLOR = (255,255,255)
 HALL_COLOR = (240,240,240)
 WALL_COLOR = (100,100,100)
+STAIRS_COLOR = (0,128,0)
 CHARACTER_COLOR = (255, 0, 0)
+
 
 DIRECTIONS = {
     'DOWN': (0, 1*Y),
@@ -141,12 +148,22 @@ DIRECTIONS = {
 pg.init()
 screen = pg.display.set_mode((X*W, Y*H))
 
-position = (X*10,Y*10)
+#création de la MAP du premier étage
+C1,M1,L1 = cree_Carte()
+C1 = C1.T
+M1 = M1.T
 
+#création de la MAP du deuxième étage
+C2,M2,L2 = cree_Carte()
+C2 = C2.T
+M2 = M2.T
 
-C,M,L = cree_Carte()
-C = C.T
-M = M.T
+C = C1
+M = M1
+
+#spawn dans une salle
+y,x,l,Larg = L1[0]
+position = ((x+2)*X,(y+2)*Y)
 
 
 def move_character(position, direction):
@@ -168,11 +185,14 @@ def draw_game(position):
                 J = j*X
                 color = BACKGROUND_COLOR
                 if M[i,j] == 1:
-                    color = WALL_COLOR
+                  color = WALL_COLOR
                 if M[i,j] == 2:
-                    color = ROOM_COLOR
+                  color = ROOM_COLOR
                 if M[i,j] == 3:
-                    color = HALL_COLOR
+                  color = HALL_COLOR
+                if M[i,j] == 4:
+                  color = STAIRS_COLOR
+                
                 rect = pg.Rect(I,J,X,Y)
                 pg.draw.rect(screen,color,rect)
 
