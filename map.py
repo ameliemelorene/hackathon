@@ -139,6 +139,7 @@ HALL_COLOR = (240,240,240)
 WALL_COLOR = (100,100,100)
 STAIRS_COLOR = (0,128,0)
 CHARACTER_COLOR = (255, 0, 0)
+MEANGUY_COLOR = (255,210,0)
 
 
 DIRECTIONS = {
@@ -148,6 +149,9 @@ DIRECTIONS = {
     'LEFT': (-1*X, 0),
     'ENTER' : (100,100)
 }
+
+POINTS_VIE_HEROS = 50
+POINTS_VIE_BAD = 10
 
 pg.init()
 screen = pg.display.set_mode((X*W, Y*H))
@@ -174,6 +178,35 @@ M,C,L,esc = liste_etages[0]
 y,x,l,Larg = L[0]
 position = ((x+2)*X,(y+2)*Y)
 
+#Création des méchants
+def cree_Mechant(L):
+    liste = []
+    for salle in L:
+      y0,x0,y,x = salle[0],salle[1],salle[2],salle[3]
+      x_mech,y_mech = rd.randint(x0+1,x0+x-2), rd.randint(y0+1,y0+y-2)
+      i = rd.randint(0,2)
+      if i == 1 or i == 0:
+        liste.append((x_mech,y_mech,POINTS_VIE_BAD))
+    return liste
+
+liste_mechant = cree_Mechant(L)
+
+
+def combat(num_mechant):
+  global POINTS_VIE_HEROS
+  badguy_x, badguy_y, life = liste_mechant[num_mechant]
+  degats = rd.randint(5,10)
+  degats2 = rd.randint(5,10)
+  success = rd.random()
+  success2 = rd.random()
+  if success>0.33:
+    POINTS_VIE_HEROS += -degats 
+  if success2>0.5:
+    liste_mechant[num_mechant] = badguy_x, badguy_y, life - degats2
+  pg.display.set_caption(f"points de vie: {POINTS_VIE_HEROS}")
+  pygame.time.delay(2000) #on attend deux secondes
+  
+
 
 def move_character(position, direction):
   global M,C,L,esc,etage
@@ -181,7 +214,7 @@ def move_character(position, direction):
   dx,dy = direction
   if dx < 100:
     x2,y2 = (x+dx)//X,(y+dy)//Y
-    if M[x2,y2] != 1:
+    if M[x2,y2] != 1 :
       position = (x+dx,y+dy)
   elif dx == 100 and M[x//X,y//Y] == 4:
     etage = (etage+1)%nb_etages
@@ -217,6 +250,13 @@ def draw_game(position):
     x,y = position
     rect = pg.Rect(x, y, X, Y)
     pg.draw.rect(screen, CHARACTER_COLOR, rect)
+
+    #dessine les méchants
+    for mechant in liste_mechant:
+      x_mech,y_mech = mechant[0],mechant[1]
+      rect = pg.Rect(x_mech*X, y_mech*Y, X, Y)
+      pg.draw.rect(screen, MEANGUY_COLOR, rect)
+    
     pg.display.update()
 
 direction = (0,0)
