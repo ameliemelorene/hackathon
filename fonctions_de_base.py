@@ -1,18 +1,20 @@
 import numpy as np
 import pygame
-
+import random as rd
 
 #types de cellules et de méchants :
 #... à lister ...
 
 
-def mignot(n):
-  return n*'mignot'
-
-
-def cree_Carte(nbrSalle):
+def cree_Carte(n=100,p=50):
   #les salles seront un nombre aléatoire entre 3 et 6
   #la taille des salles varie entre 4x4 et 6x10
+  nbreSalle=rd.randint(3,7)
+  for i in range(nbreSalle):
+    largeur=rd.randint(4,7)
+    longueur=rd.randint(4,11)
+    cree_salle(longueur,largeur)
+
 
 
 def cree_salle((n,p)):
