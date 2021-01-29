@@ -10,10 +10,12 @@ WINDOW_HEIGHT = 700
 RECT_WIDTH = 20
 RECT_HEIGHT = 20
 
+# Font --> ?
+
 pygame.init()
 
 game_window = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
-pygame.display.set_caption("La quête de Sœur Thérèse")
+pygame.display.set_caption("Sur la piste du Stade Rennais")
 
 game_running = True
 clock = pygame.time.Clock()
