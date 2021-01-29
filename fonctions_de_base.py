@@ -2,15 +2,17 @@ import numpy as np
 import pygame
 import random as rd
 import matplotlib.pyplot as plt
+from math import *
 #types de cellules et de méchants :
 #... à lister ...
 
 #mur 1
 #salle 2
 #chemin 3
+#escalier 4
 def cree_Carte(n=36,p=65):
   #les salles seront un nombre aléatoire entre 4 et 6
-  #la taille des salles varie entre 5x6 et 7x10
+  #la taille des salles varie entre 6x8 et 10x15
   M=np.zeros((n,p),dtype='str')
   C=np.zeros((n,p),dtype='int')
   #crée les murs
@@ -29,8 +31,8 @@ def cree_Carte(n=36,p=65):
   nbreSalle=rd.randint(4,6)
   ListeSalle=[]
   for i in range(nbreSalle):
-    largeur=rd.randint(5,7)
-    longueur=rd.randint(6,10)
+    largeur=rd.randint(6,10)
+    longueur=rd.randint(8,15)
     si,sj=cree_salle(longueur,largeur,C,M)
     ListeSalle.append((si,sj,longueur,largeur))
   return M,C,ListeSalle
@@ -80,30 +82,116 @@ def cree_salle(n,p,C,M):
 def cree_Chemin(listeSalle,M,C):
   #on trie la liste des salles selon l'ordre de lecture classique
   tri_bulle(listeSalle)
-  def cree_Lien(S1,S2):
-    if S1[1]<S2[1]:
-      #chemin de en haut à droite à en haut à gauche
-      dx=S2[1]-S1[1]-S1[4]
-      dy=S1[0]-S2[0]
-      for i in range(dx):
-        C[S1[1]+i,S1[0]+1]=1
-        M[S1[1]+i,S1[0]+1]='chemin'
-      for j in range(dy-1):
-        pass
+
+  def cree_un_chemin(S1,S2):
+    g1x=S1[1]
+    d1x=S1[1]+S1[3]
+    g2x=S2[1]
+    d2x=S2[1]+S2[3]
+    h1y=S1[0]
+    b1y=S1[0]+S1[2]
+    h2y=S2[0]
+    b2y=S2[0]+S2[2]
+    if d1x<g2x:
+      dx=g2x-d1x
+      for p in range(-1,dx+1):
+        C[h1y+1,d1x+p]=3
+        M[h1y+1,d1x+p]='chemin'
+    elif d1x==g2x:
+      C[h1y+1,d1x-1]=3
+      M[h1y+1,d1x-1]='chemin'
+      C[h1y+1,d1x]=3
+      M[h1y+1,d1x]='chemin'
+    else:
+      if d2x<g1x:
+        dx=g1x-d2x
+        for p in range(-1,dx+1):
+          C[h2y+1,d2x+p]=3
+          M[h2y+1,d2x+p]='chemin'
+      elif d2x==g1x:
+        C[h2y+1,d2x]=3
+        M[h2y+1,d2x]='chemin'
+        C[h2y+1,d2x-1]=3
+        M[h2y+1,d2x-1]='chemin'
+
+    if b1y<h2y:
+      dy=h2y-b1y
+      for p in range(-1,dy+1):
+        C[b1y+p,g1x+1]=3
+        M[b1y+p,g1x+1]='chemin'
+    elif b1y==h2y:
+      C[b1y-1,g1x+1]=3
+      M[b1y-1,g1x+1]='chemin'
+      C[b1y,g1x+1]=3
+      M[h1y,g1x+1]='chemin'
+    else:
+      if b2y<h1y:
+        dy=h1y-b2y
+        for p in range(-1,dy+1):
+          C[b2y+p,g2x+1]=3
+          M[b2y+p,g2x+1]='chemin'
+      elif b2y==h1y:
+        C[b2y,g2x+1]=3
+        M[b2y,g2x+1]='chemin'
+        C[b2y-1,g2x+1]=3
+        M[b2y-1,g2x+1]='chemin'
+
+  nSalle=len(listeSalle)
+  for k in range(nSalle-1):
+    voisin=k+1
+    dist=distance_salle(listeSalle[k],listeSalle[k+1])
+    for j in range(k+1,nSalle):
+      dist2=distance_salle(listeSalle[k],listeSalle[j])
+      if dist2<dist:
+        voisin=j
+    cree_un_chemin(listeSalle[k],listeSalle[voisin])
 
 
 
-    elif S1[1]>=S2[1]:
-      #chemin de en bas à gauche à en haut droite
-      dx=S1[1]-S2[1]-S2[4]
-      dy=S1[0]-S2[0]
 
+# def table_des_liens(listeSalle):
+#   n=len(listeSalle)
+#   M=np.eye((n),dtype='object')
+#   for i in range(n):
+#     for j in range(i,n):
+#       M[i,j]=distance_salle(listeSalle[i],listeSalle[j])
+#
+#   return M
 
+def distance_salle(S1,S2):
+  g1x=S1[1]
+  d1x=S1[1]+S1[3]
+  g2x=S2[1]
+  d2x=S2[1]+S2[3]
+  if d1x<g2x:
+    dx=g2x-d1x
+  elif d1x==g2x:
+    dx=0
+  else:
+    if d2x<g1x:
+      dx=g1x-d2x
+    elif d2x==g1x:
+      dx=0
+    else:
+      dx=0
 
+  h1y=S1[0]
+  b1y=S1[0]+S1[2]
+  h2y=S2[0]
+  b2y=S2[0]+S2[2]
+  if b1y<h2y:
+    dy=h2y-b1y
+  elif b1y==h2y:
+    dy=0
+  else:
+    if b2y<h1y:
+      dy=h1y-b2y
+    elif b2y==h1y:
+      dy=0
+    else:
+      dy=0
 
-
-
-
+  return dx+dy
 
 def tri_bulle(tab):
   def inferieur(e1,e2):
@@ -125,6 +213,8 @@ def tri_bulle(tab):
 
 
 M,C,L=cree_Carte()
+cree_Chemin(L,M,C)
 plt.imshow(C)
+
 plt.show()
 
