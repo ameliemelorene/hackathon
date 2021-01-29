@@ -24,10 +24,35 @@ def cases_occupes(M):
   C=np.zeros((n,p))
   return C
 
-def cree_salle(n,p,C):
+def cree_salle(n,p,C,M):
+   """crée une salle dans un endroit non occupé de la carte  IN PLACE"""
   tn,tp=C.shape
-  """crée une salle dans un endroit non occupé de la carte"""
-  i,j=rd.randint(0,n-1),rd.randint(0,p-1)
+  nbrTest=10
+  tester=True
+  numTest=1
+  while tester and numTest <= nbrTest:
+    pi,pj=rd.randint(0,tn-1),rd.randint(0,tp-1)
+    possible=salle_Possible(pi,pj)
+    if possible:
+      for i in range(n):
+        for j in range(p):
+          C[pi+i,pj+j]=1
+          M[pi+i,pj+j]='salle'
+      tester =False
+    numTest+=1
+  if numTest==11:
+    print('pas réussi à placer la salle')
+
+
+
+
+  def salle_Possible(pi,pj):
+    for i in range(n):
+      for j in range(p):
+        if C[pi+i,pj+j]==1:
+          return False
+    return True
+
   while test
 
 def dans_une_salle((i,j,k))
