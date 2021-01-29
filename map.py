@@ -24,8 +24,8 @@ def cree_Carte(n=36,p=65):
   nbreSalle=rd.randint(4,6)
   ListeSalle=[]
   for i in range(nbreSalle):
-    largeur=rd.randint(5,7)
-    longueur=rd.randint(6,10)
+    largeur=rd.randint(6,10)
+    longueur=rd.randint(8,15)
     si,sj=cree_salle(longueur,largeur,C,M)
     ListeSalle.append((si,sj,longueur,largeur))
   return M,C,ListeSalle
@@ -118,6 +118,8 @@ def tri_bulle(tab):
       if not inferieur(tab[j],tab[j+1]):
         tab[j], tab[j+1] = tab[j+1], tab[j]
 
+
+
 # in pixels
 W, H = 65, 36
 # in perso units
@@ -130,8 +132,8 @@ WALL_COLOR = (100,100,100)
 CHARACTER_COLOR = (255, 0, 0)
 
 DIRECTIONS = {
-    'DOWN': (0, -1*Y),
-    'UP': (0, 1*Y),
+    'DOWN': (0, 1*Y),
+    'UP': (0, -1*Y),
     'RIGHT': (1*X, 0),
     'LEFT': (-1*X, 0),
 }
@@ -151,8 +153,9 @@ def move_character(position, direction):
     x,y = position
     dx,dy = direction
     x2,y2 = (x+dx)//X,(y+dy)//Y
-    #if M[x2,y2] != 1:
-    position = (x+dx,y+dy)
+    if M[x2,y2] != 1:
+      position = (x+dx,y+dy)
+    return position
 
 def draw_game(position):
     screen.fill(BACKGROUND_COLOR)
@@ -194,14 +197,13 @@ while running:
         if event.type == pg.QUIT:
             running = False
         # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
-        elif event.type == pg.KEYDOWN:
+        if event.type == pg.KEYDOWN:
             # si la touche est "Q" on veut quitter le programme
             if event.key == pg.K_q:
                 running = False
 
             if event.key == pg.K_LEFT:
                 direction = DIRECTIONS['LEFT']
-                running = False
             if event.key == pg.K_RIGHT:
                 direction = DIRECTIONS['RIGHT']
             if event.key == pg.K_UP:
@@ -209,11 +211,9 @@ while running:
             if event.key == pg.K_DOWN:
                 direction = DIRECTIONS['DOWN']
 
-            x,y = position
-            dx,dy = direction
-            x2,y2 = (x+dx,y+dy)
-
-    move_character(position,direction) #on efface l'écran actuel
+    position = move_character(position,direction)
+    direction = (0,0) 
+            #on efface l'écran actuel
             #pygame.display.update() #on affiche
             #pygame.time.delay(100) #on attend un dixième de seconde
 
