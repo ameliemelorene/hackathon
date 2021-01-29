@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 #types de cellules et de méchants :
 #... à lister ...
 
-
+#mur 1
+#salle 2
+#chemin 3
 def cree_Carte(n=36,p=65):
   #les salles seront un nombre aléatoire entre 4 et 6
   #la taille des salles varie entre 5x6 et 7x10
@@ -27,21 +29,14 @@ def cree_Carte(n=36,p=65):
   nbreSalle=rd.randint(4,6)
   ListeSalle=[]
   for i in range(nbreSalle):
-    largeur=rd.randint(4,7)
-    longueur=rd.randint(4,11)
-    cree_salle(longueur,largeur,C,M)
+    largeur=rd.randint(5,7)
+    longueur=rd.randint(6,10)
+    si,sj=cree_salle(longueur,largeur,C,M)
+    ListeSalle.append((si,sj,longueur,largeur))
+  return M,C,ListeSalle
 
-  return M,C
 
 
-
-def cree_salle(n,p,C):
-  """crée une salle dans un endroit non occupé de la carte"""
-  largeur=rd.randint(5,7)
-  longueur=rd.randint(6,10)
-  si,sj=cree_salle(longueur,largeur,C,M)
-  ListeSalle.append((si,sj,longueur,largeur))
-  return M,C
 
 
 def cree_salle(n,p,C,M):
@@ -49,7 +44,7 @@ def cree_salle(n,p,C,M):
   def salle_Possible(pi,pj):
     for i in range(n):
       for j in range(p):
-        if C[pi+i,pj+j]==1:
+        if C[pi+i,pj+j]>0:
           return False
     return True
 
@@ -62,8 +57,18 @@ def cree_salle(n,p,C,M):
     possible=salle_Possible(pi,pj)
     if possible:
       for i in range(n):
-        for j in range(p):
-          C[pi+i,pj+j]=1
+        C[i+pi,pj]=1
+        C[i+pi,pj+p-1]=1
+        M[i+pi,pj]='mur'
+        M[i+pi,pj+p-1]='mur'
+      for j in range(1,p-1):
+        C[pi,pj+j]=1
+        C[n-1+pi,pj+j]=1
+        M[pi,pj+j]='mur'
+        M[n-1+pi,pj+j]='mur'
+      for i in range(1,n-1):
+        for j in range(1,p-1):
+          C[pi+i,pj+j]=2
           M[pi+i,pj+j]='salle'
       tester =False
     numTest+=1
@@ -75,6 +80,24 @@ def cree_salle(n,p,C,M):
 def cree_Chemin(listeSalle,M,C):
   #on trie la liste des salles selon l'ordre de lecture classique
   tri_bulle(listeSalle)
+  def cree_Lien(S1,S2):
+    if S1[1]<S2[1]:
+      #chemin de en haut à droite à en haut à gauche
+      dx=S2[1]-S1[1]-S1[4]
+      dy=S1[0]-S2[0]
+      for i in range(dx):
+        C[S1[1]+i,S1[0]+1]=1
+        M[S1[1]+i,S1[0]+1]='chemin'
+      for j in range(dy-1):
+        pass
+
+
+
+    elif S1[1]>=S2[1]:
+      #chemin de en bas à gauche à en haut droite
+      dx=S1[1]-S2[1]-S2[4]
+      dy=S1[0]-S2[0]
+
 
 
 
@@ -101,7 +124,7 @@ def tri_bulle(tab):
         tab[j], tab[j+1] = tab[j+1], tab[j]
 
 
-M,C=cree_Carte()
+M,C,L=cree_Carte()
 plt.imshow(C)
 plt.show()
 
